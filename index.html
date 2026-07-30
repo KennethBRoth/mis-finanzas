@@ -75,8 +75,20 @@
         <button type="button" id="close-editor-btn" class="link-btn">Listo</button>
       </div>
 
-      <div class="chips-row-label"><span>Forma de pago</span></div>
+      <div class="chips-row-label">
+        <span>Forma de pago</span>
+        <button type="button" id="edit-payments-btn" class="link-btn">Editar formas de pago</button>
+      </div>
       <div class="chips" id="payment-chips"></div>
+
+      <div id="payment-editor" class="category-editor hidden">
+        <div class="cat-editor-list" id="payment-editor-list"></div>
+        <div class="cat-editor-add">
+          <input type="text" id="new-payment-input" placeholder="Nueva forma de pago" autocomplete="off">
+          <button type="button" id="add-payment-btn" class="btn-small">Agregar</button>
+        </div>
+        <button type="button" id="close-payment-editor-btn" class="link-btn">Listo</button>
+      </div>
 
       <input type="text" id="note-input" class="note-input" placeholder="Nota (opcional)" autocomplete="off">
 
