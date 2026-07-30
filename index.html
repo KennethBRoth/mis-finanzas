@@ -14,14 +14,16 @@
   <div id="login-screen" class="screen">
     <div class="login-card">
       <div class="login-mark">¢</div>
-      <h1>Tu ticket</h1>
-      <p class="login-sub">Anotá cada gasto, ingreso o inversión antes de que se te olvide.</p>
+      <h1 id="login-title">Tu ticket</h1>
+      <p class="login-sub" id="login-subtitle">Anotá cada gasto, ingreso o inversión antes de que se te olvide.</p>
       <form id="login-form">
         <input type="email" id="login-email" placeholder="Email" autocomplete="username" required>
         <input type="password" id="login-password" placeholder="Contraseña" autocomplete="current-password" required>
-        <button type="submit" class="btn-primary">Entrar</button>
+        <input type="password" id="login-password-confirm" placeholder="Repetir contraseña" autocomplete="new-password" class="hidden">
+        <button type="submit" class="btn-primary" id="login-submit-btn">Entrar</button>
       </form>
       <p id="login-error" class="login-error"></p>
+      <button type="button" id="toggle-signup-btn" class="link-btn">¿No tenés cuenta? Creá una</button>
     </div>
   </div>
 
