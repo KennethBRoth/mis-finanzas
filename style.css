@@ -515,3 +515,222 @@ body {
   line-height: 1.5;
 }
 #debug-box:empty { display: none; }
+
+/* ---------- Moneda ---------- */
+.currency-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.curr-btn {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.curr-btn.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--card);
+}
+
+/* ---------- Balance multi-moneda ---------- */
+#balance-cards { display: flex; flex-direction: column; gap: 14px; }
+
+.balance-card-label {
+  font-size: 11px;
+  color: #A7A399;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.budget-alerts { margin-top: 10px; }
+
+.budget-alert {
+  background: rgba(224,130,118,0.18);
+  color: #F3B3AA;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  margin-top: 8px;
+}
+
+/* ---------- Rango personalizado ---------- */
+.history-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.range-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  font-size: 13px;
+}
+
+.range-picker input[type="date"] {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 9px;
+  font-size: 13px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+/* ---------- Secciones de configuración (recurrentes / presupuestos) ---------- */
+.config-section {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.config-header h2 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  margin: 0;
+}
+
+.config-hint {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin: 6px 0 12px;
+  line-height: 1.4;
+}
+
+.config-form {
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.config-form input[type="text"],
+.config-form input[type="number"] {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-body);
+  width: 100%;
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.config-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: var(--card);
+}
+
+.config-field input {
+  border: none;
+  background: none;
+  padding: 10px 0;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  width: 100%;
+  color: var(--ink);
+}
+.config-field input:focus { outline: none; }
+
+.config-label {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.config-label input {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  background: var(--card);
+  color: var(--ink);
+}
+
+.btn-full { width: 100%; }
+
+.config-list { display: flex; flex-direction: column; gap: 8px; }
+
+.config-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--paper);
+  border-radius: 10px;
+  font-size: 13.5px;
+}
+
+.config-item .ci-main { flex: 1; }
+.config-item .ci-name { font-weight: 600; display: block; }
+.config-item .ci-detail { color: var(--ink-soft); font-size: 12px; }
+.config-item .ci-amount { font-family: var(--font-mono); font-weight: 500; white-space: nowrap; }
+.config-item .ci-del {
+  border: none; background: none; color: var(--ink-soft);
+  font-size: 16px; cursor: pointer; line-height: 1;
+}
+
+.budget-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px dotted var(--line);
+}
+.budget-item:last-child { border-bottom: none; }
+
+.budget-item .bi-name { font-size: 13.5px; font-weight: 600; }
+.budget-item .bi-progress { font-size: 11.5px; color: var(--ink-soft); font-family: var(--font-mono); }
+.budget-item input {
+  width: 100px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-align: right;
+  background: var(--paper);
+  color: var(--ink);
+}
+.budget-item.over .bi-progress { color: var(--gasto); }
