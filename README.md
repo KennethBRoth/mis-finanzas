@@ -94,6 +94,10 @@ En "Historial", al lado del selector de mes hay un link **"Rango personalizado"*
 
 En la sección "Gastos e ingresos recurrentes", tocá **"Agregar"** para cargar algo que se repite todos los meses (alquiler, sueldo, un servicio fijo): elegís el tipo, un nombre, la categoría, el monto, la moneda y el día del mes en que querés que se cargue. A partir de ese día, cada mes la app te lo agrega sola al ticket — no hace falta que lo carges a mano. Podés borrar un recurrente en cualquier momento desde la lista.
 
+### Editar formas de pago
+
+Al lado de "Forma de pago" hay un link **"Editar formas de pago"** que funciona igual que el de categorías: podés agregar una nueva o borrar las que no uses, con una **×**. Se guarda en tu cuenta (usa el mismo permiso `config` que ya tenías habilitado, así que no hace falta tocar las reglas de Firestore de nuevo).
+
 ### Presupuesto por categoría
 
 En "Presupuesto por categoría" vas a ver todas tus categorías de gasto con lo que llevás gastado este mes. Si le ponés un límite a una categoría, la app te avisa arriba (en el balance) apenas te pasás de ese monto. Dejar el campo vacío significa "sin límite".
