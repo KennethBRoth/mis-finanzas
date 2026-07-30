@@ -1,7 +1,7 @@
 import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import {
   getFirestore, collection, addDoc, deleteDoc, doc,
@@ -50,6 +50,11 @@ const appScreen = document.getElementById('app-screen');
 const loginForm = document.getElementById('login-form');
 const loginError = document.getElementById('login-error');
 const logoutBtn = document.getElementById('logout-btn');
+const loginTitle = document.getElementById('login-title');
+const loginSubtitle = document.getElementById('login-subtitle');
+const loginPasswordConfirm = document.getElementById('login-password-confirm');
+const loginSubmitBtn = document.getElementById('login-submit-btn');
+const toggleSignupBtn = document.getElementById('toggle-signup-btn');
 
 const typeSelector = document.getElementById('type-selector');
 const chipsContainer = document.getElementById('category-chips');
@@ -102,11 +107,55 @@ const recurringListEl = document.getElementById('recurring-list');
 
 const budgetListEl = document.getElementById('budget-list');
 
+let authMode = 'login';
+
+toggleSignupBtn.addEventListener('click', () => {
+  authMode = authMode === 'login' ? 'signup' : 'login';
+  loginError.textContent = '';
+  if (authMode === 'signup') {
+    loginTitle.textContent = 'Creá tu cuenta';
+    loginSubtitle.textContent = 'Tu ticket va a ser privado — nadie más va a poder ver tus movimientos.';
+    loginPasswordConfirm.classList.remove('hidden');
+    loginPasswordConfirm.required = true;
+    loginSubmitBtn.textContent = 'Crear cuenta';
+    toggleSignupBtn.textContent = '¿Ya tenés cuenta? Entrar';
+  } else {
+    loginTitle.textContent = 'Tu ticket';
+    loginSubtitle.textContent = 'Anotá cada gasto, ingreso o inversión antes de que se te olvide.';
+    loginPasswordConfirm.classList.add('hidden');
+    loginPasswordConfirm.required = false;
+    loginSubmitBtn.textContent = 'Entrar';
+    toggleSignupBtn.textContent = '¿No tenés cuenta? Creá una';
+  }
+});
+
 loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   loginError.textContent = '';
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
+
+  if (authMode === 'signup') {
+    const confirm = loginPasswordConfirm.value;
+    if (password.length < 6) {
+      loginError.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+      return;
+    }
+    if (password !== confirm) {
+      loginError.textContent = 'Las contraseñas no coinciden.';
+      return;
+    }
+    if (window.logDebug) window.logDebug('Creando cuenta para ' + email);
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      if (window.logDebug) window.logDebug('Cuenta creada OK');
+    } catch (err) {
+      loginError.textContent = 'Error: ' + err.code;
+      if (window.logDebug) window.logDebug('Registro FALLÓ: ' + err.code + ' — ' + err.message);
+    }
+    return;
+  }
+
   if (window.logDebug) window.logDebug('Intentando login con ' + email);
   try {
     await signInWithEmailAndPassword(auth, email, password);
