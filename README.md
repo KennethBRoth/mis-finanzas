@@ -30,6 +30,9 @@ service cloud.firestore {
     match /usuarios/{userId}/config/{docId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
+    match /usuarios/{userId}/recurrentes/{docId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }
 ```
@@ -78,3 +81,19 @@ Ahora la app tiene una cajita de diagnóstico: al abrirla, vas a ver un recuadro
 ### Editar categorías
 
 Al lado de "Categoría" hay un link **"Editar categorías"**. Al tocarlo se abre una lista de tus categorías actuales (para el tipo que tengas seleccionado: Gasto, Ingreso o Inversión), cada una con una **×** para eliminarla, y un campo para agregar una nueva. Los cambios se guardan solos y quedan disponibles en cualquier dispositivo donde entres con tu cuenta.
+
+### Moneda (ARS / USD)
+
+Al cargar un movimiento podés elegir si es en pesos o en dólares con los botones **ARS / USD**. El balance de arriba muestra un bloque separado para cada moneda (el bloque USD solo aparece si alguna vez cargaste algo en dólares) — no se mezclan ni se convierten entre sí.
+
+### Rango de fechas personalizado
+
+En "Historial", al lado del selector de mes hay un link **"Rango personalizado"**. Al tocarlo aparecen dos campos de fecha ("Desde" y "Hasta") — elegís las fechas y tocás **"Ver"** para filtrar el historial y el balance por ese período exacto. Con **"Volver a mes"** volvés a la vista normal por mes.
+
+### Gastos e ingresos recurrentes
+
+En la sección "Gastos e ingresos recurrentes", tocá **"Agregar"** para cargar algo que se repite todos los meses (alquiler, sueldo, un servicio fijo): elegís el tipo, un nombre, la categoría, el monto, la moneda y el día del mes en que querés que se cargue. A partir de ese día, cada mes la app te lo agrega sola al ticket — no hace falta que lo carges a mano. Podés borrar un recurrente en cualquier momento desde la lista.
+
+### Presupuesto por categoría
+
+En "Presupuesto por categoría" vas a ver todas tus categorías de gasto con lo que llevás gastado este mes. Si le ponés un límite a una categoría, la app te avisa arriba (en el balance) apenas te pasás de ese monto. Dejar el campo vacío significa "sin límite".
