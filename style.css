@@ -112,6 +112,11 @@ body {
   margin-top: 12px;
 }
 
+#toggle-signup-btn {
+  margin-top: 4px;
+  color: var(--ink-soft);
+}
+
 /* ---------- App shell ---------- */
 #app-screen {
   max-width: 480px;
