@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ticket · Mis finanzas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- PANTALLA DE LOGIN -->
+  <div id="login-screen" class="screen">
+    <div class="login-card">
+      <div class="login-mark">¢</div>
+      <h1>Tu ticket</h1>
+      <p class="login-sub">Anotá cada gasto, ingreso o inversión antes de que se te olvide.</p>
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="Email" autocomplete="username" required>
+        <input type="password" id="login-password" placeholder="Contraseña" autocomplete="current-password" required>
+        <button type="submit" class="btn-primary">Entrar</button>
+      </form>
+      <p id="login-error" class="login-error"></p>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app-screen" class="screen hidden">
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">¢</span>
+        <span class="brand-name">Ticket</span>
+      </div>
+      <button id="logout-btn" class="btn-ghost">Salir</button>
+    </header>
+
+    <!-- BALANCE -->
+    <section class="balance-block">
+      <span class="balance-label">Balance del mes</span>
+      <span id="balance-amount" class="balance-amount">$ 0</span>
+      <div class="balance-breakdown">
+        <div class="bd-item bd-ingreso"><span class="dot"></span>Ingresos <b id="sum-ingreso">$0</b></div>
+        <div class="bd-item bd-gasto"><span class="dot"></span>Gastos <b id="sum-gasto">$0</b></div>
+        <div class="bd-item bd-inversion"><span class="dot"></span>Inversión <b id="sum-inversion">$0</b></div>
+      </div>
+    </section>
+
+    <!-- QUICK ADD -->
+    <section class="quick-add" id="quick-add">
+      <div class="type-selector" id="type-selector">
+        <button type="button" class="type-btn type-gasto active" data-type="gasto">Gasto</button>
+        <button type="button" class="type-btn type-ingreso" data-type="ingreso">Ingreso</button>
+        <button type="button" class="type-btn type-inversion" data-type="inversion">Inversión</button>
+      </div>
+
+      <div class="amount-row">
+        <span class="currency-sign">$</span>
+        <input type="number" inputmode="decimal" id="amount-input" placeholder="0" autocomplete="off">
+      </div>
+
+      <div class="chips-row-label">
+        <span>Categoría</span>
+        <button type="button" id="edit-categories-btn" class="link-btn">Editar categorías</button>
+      </div>
+      <div class="chips" id="category-chips"></div>
+
+      <div id="category-editor" class="category-editor hidden">
+        <div class="cat-editor-list" id="cat-editor-list"></div>
+        <div class="cat-editor-add">
+          <input type="text" id="new-category-input" placeholder="Nueva categoría" autocomplete="off">
+          <button type="button" id="add-category-btn" class="btn-small">Agregar</button>
+        </div>
+        <button type="button" id="close-editor-btn" class="link-btn">Listo</button>
+      </div>
+
+      <div class="chips-row-label"><span>Forma de pago</span></div>
+      <div class="chips" id="payment-chips"></div>
+
+      <input type="text" id="note-input" class="note-input" placeholder="Nota (opcional)" autocomplete="off">
+
+      <button id="add-btn" class="btn-print">
+        <span>Imprimir en el ticket</span>
+      </button>
+    </section>
+
+    <!-- TICKET DE HOY -->
+    <section class="ticket-section">
+      <div class="ticket-header">
+        <h2>Hoy</h2>
+        <span id="today-date"></span>
+      </div>
+      <div class="perforation"></div>
+      <div id="today-list" class="ticket-list">
+        <p class="empty-state">Todavía no cargaste nada hoy. Arriba tenés el primer renglón.</p>
+      </div>
+    </section>
+
+    <!-- HISTORIAL -->
+    <section class="history-section">
+      <div class="history-header">
+        <h2>Historial</h2>
+        <select id="month-filter"></select>
+      </div>
+      <div id="history-list" class="ticket-list"></div>
+    </section>
+
+  </div>
+
+  <div id="debug-box"></div>
+
+  <script>
+    window.logDebug = function(msg) {
+      const box = document.getElementById('debug-box');
+      const line = document.createElement('div');
+      line.textContent = new Date().toLocaleTimeString('es-AR') + ' — ' + msg;
+      box.appendChild(line);
+    };
+    window.addEventListener('error', (e) => window.logDebug('ERROR: ' + e.message));
+    window.addEventListener('unhandledrejection', (e) => {
+      const reason = e.reason && e.reason.message ? e.reason.message : e.reason;
+      window.logDebug('ERROR: ' + reason);
+    });
+    window.logDebug('Página cargada, iniciando app.js...');
+  </script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
