@@ -38,13 +38,9 @@
 
     <!-- BALANCE -->
     <section class="balance-block">
-      <span class="balance-label">Balance del mes</span>
-      <span id="balance-amount" class="balance-amount">$ 0</span>
-      <div class="balance-breakdown">
-        <div class="bd-item bd-ingreso"><span class="dot"></span>Ingresos <b id="sum-ingreso">$0</b></div>
-        <div class="bd-item bd-gasto"><span class="dot"></span>Gastos <b id="sum-gasto">$0</b></div>
-        <div class="bd-item bd-inversion"><span class="dot"></span>Inversión <b id="sum-inversion">$0</b></div>
-      </div>
+      <span class="balance-label" id="balance-period-label">Balance del mes</span>
+      <div id="balance-cards"></div>
+      <div id="budget-alerts" class="budget-alerts"></div>
     </section>
 
     <!-- QUICK ADD -->
@@ -56,8 +52,12 @@
       </div>
 
       <div class="amount-row">
-        <span class="currency-sign">$</span>
+        <span class="currency-sign" id="currency-sign-label">$</span>
         <input type="number" inputmode="decimal" id="amount-input" placeholder="0" autocomplete="off">
+      </div>
+      <div class="currency-toggle" id="currency-toggle">
+        <button type="button" class="curr-btn active" data-currency="ARS">ARS</button>
+        <button type="button" class="curr-btn" data-currency="USD">USD</button>
       </div>
 
       <div class="chips-row-label">
@@ -101,9 +101,63 @@
     <section class="history-section">
       <div class="history-header">
         <h2>Historial</h2>
-        <select id="month-filter"></select>
+        <div class="history-controls">
+          <select id="month-filter"></select>
+          <button type="button" id="toggle-range-btn" class="link-btn">Rango personalizado</button>
+        </div>
+      </div>
+      <div id="range-picker" class="range-picker hidden">
+        <input type="date" id="range-from">
+        <span>a</span>
+        <input type="date" id="range-to">
+        <button type="button" id="apply-range-btn" class="btn-small">Ver</button>
+        <button type="button" id="cancel-range-btn" class="link-btn">Volver a mes</button>
       </div>
       <div id="history-list" class="ticket-list"></div>
+    </section>
+
+    <!-- RECURRENTES -->
+    <section class="config-section">
+      <div class="config-header">
+        <h2>Gastos e ingresos recurrentes</h2>
+        <button type="button" id="toggle-recurring-btn" class="link-btn">Agregar</button>
+      </div>
+      <p class="config-hint">Se cargan solos cada mes en la fecha que elijas (ej. alquiler, sueldo, servicios).</p>
+
+      <div id="recurring-form" class="config-form hidden">
+        <div class="type-selector" id="recurring-type-selector">
+          <button type="button" class="type-btn type-gasto active" data-type="gasto">Gasto</button>
+          <button type="button" class="type-btn type-ingreso" data-type="ingreso">Ingreso</button>
+          <button type="button" class="type-btn type-inversion" data-type="inversion">Inversión</button>
+        </div>
+        <input type="text" id="recurring-note" placeholder="Nombre (ej. Alquiler)" autocomplete="off">
+        <div class="chips" id="recurring-category-chips"></div>
+        <div class="config-row">
+          <div class="config-field">
+            <span class="currency-sign">$</span>
+            <input type="number" inputmode="decimal" id="recurring-amount" placeholder="Monto">
+          </div>
+          <div class="currency-toggle" id="recurring-currency-toggle">
+            <button type="button" class="curr-btn active" data-currency="ARS">ARS</button>
+            <button type="button" class="curr-btn" data-currency="USD">USD</button>
+          </div>
+        </div>
+        <label class="config-label">Día del mes en que se carga
+          <input type="number" id="recurring-day" min="1" max="28" value="1">
+        </label>
+        <button type="button" id="save-recurring-btn" class="btn-small btn-full">Guardar recurrente</button>
+      </div>
+
+      <div id="recurring-list" class="config-list"></div>
+    </section>
+
+    <!-- PRESUPUESTOS -->
+    <section class="config-section">
+      <div class="config-header">
+        <h2>Presupuesto por categoría</h2>
+      </div>
+      <p class="config-hint">Poné un límite mensual para las categorías de gasto que quieras controlar. Dejá vacío para no fijar límite.</p>
+      <div id="budget-list" class="config-list"></div>
     </section>
 
   </div>
