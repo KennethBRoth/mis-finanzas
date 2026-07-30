@@ -20,7 +20,8 @@ const DEFAULT_CATEGORIES = {
   inversion: ['Plazo fijo', 'Acciones/CEDEARs', 'Cripto', 'Fondo común', 'Otros']
 };
 
-const PAYMENT_METHODS = ['Efectivo', 'Débito', 'Crédito', 'Transferencia', 'Billetera virtual'];
+const DEFAULT_PAYMENT_METHODS = ['Efectivo', 'Débito', 'Crédito', 'Transferencia', 'Billetera virtual'];
+let PAYMENT_METHODS = [...DEFAULT_PAYMENT_METHODS];
 const CURRENCY_SIGN = { ARS: '$', USD: 'US$' };
 const LABELS = { gasto: 'Gasto', ingreso: 'Ingreso', inversion: 'Inversión' };
 
@@ -65,6 +66,13 @@ const catEditorList = document.getElementById('cat-editor-list');
 const newCategoryInput = document.getElementById('new-category-input');
 const addCategoryBtn = document.getElementById('add-category-btn');
 const closeEditorBtn = document.getElementById('close-editor-btn');
+
+const editPaymentsBtn = document.getElementById('edit-payments-btn');
+const paymentEditor = document.getElementById('payment-editor');
+const paymentEditorList = document.getElementById('payment-editor-list');
+const newPaymentInput = document.getElementById('new-payment-input');
+const addPaymentBtn = document.getElementById('add-payment-btn');
+const closePaymentEditorBtn = document.getElementById('close-payment-editor-btn');
 
 const todayList = document.getElementById('today-list');
 const todayDateEl = document.getElementById('today-date');
@@ -118,6 +126,7 @@ onAuthStateChanged(auth, async (user) => {
     loginScreen.classList.add('hidden');
     appScreen.classList.remove('hidden');
     await loadCategories(user.uid);
+    await loadPaymentMethods(user.uid);
     await loadBudgets(user.uid);
     renderChips();
     renderPaymentChips();
@@ -155,6 +164,24 @@ async function saveCategories() {
   if (!currentUid) return;
   const ref = doc(db, 'usuarios', currentUid, 'config', 'categorias');
   await setDoc(ref, CATEGORIES);
+}
+
+async function loadPaymentMethods(uid) {
+  const ref = doc(db, 'usuarios', uid, 'config', 'formasDePago');
+  const snap = await getDoc(ref);
+  if (snap.exists() && snap.data().metodos && snap.data().metodos.length) {
+    PAYMENT_METHODS = snap.data().metodos;
+  } else {
+    PAYMENT_METHODS = [...DEFAULT_PAYMENT_METHODS];
+    await setDoc(ref, { metodos: PAYMENT_METHODS });
+  }
+  currentPayment = PAYMENT_METHODS[0];
+}
+
+async function savePaymentMethods() {
+  if (!currentUid) return;
+  const ref = doc(db, 'usuarios', currentUid, 'config', 'formasDePago');
+  await setDoc(ref, { metodos: PAYMENT_METHODS });
 }
 
 async function loadBudgets(uid) {
@@ -271,6 +298,54 @@ function renderPaymentChips() {
   });
 }
 renderPaymentChips();
+
+editPaymentsBtn.addEventListener('click', () => {
+  paymentEditor.classList.toggle('hidden');
+  renderPaymentEditor();
+});
+
+closePaymentEditorBtn.addEventListener('click', () => {
+  paymentEditor.classList.add('hidden');
+});
+
+function renderPaymentEditor() {
+  paymentEditorList.innerHTML = '';
+  PAYMENT_METHODS.forEach((method) => {
+    const item = document.createElement('div');
+    item.className = 'cat-editor-chip';
+    item.innerHTML = '<span>' + escapeHtml(method) + '</span><button title="Eliminar">×</button>';
+    item.querySelector('button').addEventListener('click', () => removePaymentMethod(method));
+    paymentEditorList.appendChild(item);
+  });
+}
+
+addPaymentBtn.addEventListener('click', addPaymentFromInput);
+newPaymentInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); addPaymentFromInput(); }
+});
+
+async function addPaymentFromInput() {
+  const name = newPaymentInput.value.trim();
+  if (!name) return;
+  if (PAYMENT_METHODS.some(m => m.toLowerCase() === name.toLowerCase())) {
+    newPaymentInput.value = '';
+    return;
+  }
+  PAYMENT_METHODS.push(name);
+  newPaymentInput.value = '';
+  await savePaymentMethods();
+  renderPaymentEditor();
+  renderPaymentChips();
+}
+
+async function removePaymentMethod(name) {
+  if (PAYMENT_METHODS.length <= 1) return; // siempre dejar al menos una
+  PAYMENT_METHODS = PAYMENT_METHODS.filter(m => m !== name);
+  if (currentPayment === name) currentPayment = PAYMENT_METHODS[0];
+  await savePaymentMethods();
+  renderPaymentEditor();
+  renderPaymentChips();
+}
 
 currencyToggle.addEventListener('click', (e) => {
   const btn = e.target.closest('.curr-btn');
