@@ -98,6 +98,10 @@ En la sección "Gastos e ingresos recurrentes", tocá **"Agregar"** para cargar 
 
 Al lado de "Forma de pago" hay un link **"Editar formas de pago"** que funciona igual que el de categorías: podés agregar una nueva o borrar las que no uses, con una **×**. Se guarda en tu cuenta (usa el mismo permiso `config` que ya tenías habilitado, así que no hace falta tocar las reglas de Firestore de nuevo).
 
+### Cuentas de varias personas
+
+Ahora en la pantalla de login hay un link **"¿No tenés cuenta? Creá una"** — cualquiera puede crear su propio usuario con su email y contraseña, directamente desde la app (no hace falta que vos lo crees a mano en Firebase). Cada persona ve únicamente sus propios movimientos, categorías, formas de pago, presupuestos y recurrentes — la base de datos separa todo por cuenta y las reglas de Firestore impiden que una vea los datos de otra.
+
 ### Presupuesto por categoría
 
 En "Presupuesto por categoría" vas a ver todas tus categorías de gasto con lo que llevás gastado este mes. Si le ponés un límite a una categoría, la app te avisa arriba (en el balance) apenas te pasás de ese monto. Dejar el campo vacío significa "sin límite".
