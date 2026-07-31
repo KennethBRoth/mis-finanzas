@@ -791,7 +791,7 @@ function renderDebtList() {
     card.innerHTML = `
       <div class="debt-card-top">
         <span class="debt-name">${escapeHtml(d.nombre)}</span>
-        <span class="debt-balance ${saldo <= 0 ? 'paid' : ''}">${saldo <= 0 ? 'Saldada' : fmt(saldo, d.currency) + ' pendiente'}</span>
+        <span class="debt-balance ${saldo <= 0 ? 'paid' : ''}">${saldo <= 0 ? 'Saldada' : '-' + fmt(saldo, d.currency) + ' pendiente'}</span>
       </div>
       <div class="debt-detail">${fmt(d.montoPagado, d.currency)} pagado de ${fmt(d.montoTotal, d.currency)}${d.nota ? ' · ' + escapeHtml(d.nota) : ''}</div>
       ${saldo > 0 ? `
