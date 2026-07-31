@@ -61,6 +61,15 @@ Cada vez que subas un cambio a GitHub, Vercel va a actualizar la app sola.
 
 ---
 
+## Agregarla a la pantalla de inicio del iPhone
+
+1. Abrí tu app en **Safari** (tiene que ser Safari, no Chrome, para que funcione este paso en iPhone)
+2. Tocá el botón de compartir (el cuadrado con la flecha hacia arriba)
+3. Deslizá y elegí **"Agregar a pantalla de inicio"**
+4. Confirmá el nombre y tocá **"Agregar"**
+
+Va a quedar con su propio ícono (fondo oscuro con el "$") y, al abrirla, se ve como una app de verdad, sin la barra de direcciones de Safari arriba.
+
 ## Si algo no funciona
 
 Ahora la app tiene una cajita de diagnóstico: al abrirla, vas a ver un recuadro negro con letras verdes en la parte de abajo de la pantalla. Ahí se muestra, en español simple, qué está pasando (si Firebase se conectó bien, si el login falló y por qué, etc.) — no hace falta abrir ninguna herramienta de desarrollador. Si algo falla, sacale una foto a ese recuadro y mandámela.
