@@ -520,6 +520,8 @@ body {
   line-height: 1.5;
 }
 #debug-box:empty { display: none; }
+#debug-box { display: none; }
+#debug-box.debug-visible { display: block; }
 
 /* ---------- Moneda ---------- */
 .currency-toggle {
