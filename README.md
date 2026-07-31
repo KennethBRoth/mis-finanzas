@@ -113,7 +113,7 @@ Ahora en la pantalla de login hay un link **"¿No tenés cuenta? Creá una"** �
 
 ### Deudas
 
-En la sección "Deudas", tocá **"Agregar deuda"** para cargar una: nombre (ej. "Tarjeta Visa"), monto total y moneda. A partir de ahí, cada deuda te muestra cuánto pagaste y cuánto te queda. Cuando hagas un pago, escribí el monto en el campo de esa deuda y tocá **"Pagar"** — se descuenta del saldo pendiente y, además, queda registrado automáticamente como un gasto en tu ticket (categoría "Pago de deuda"), así también impacta en tu balance del mes. Cuando el saldo llega a cero, la deuda se marca como "Saldada".
+En la sección "Deudas", tocá **"Agregar deuda"** y elegí primero si **"Debo"** (le debés a alguien, ej. una tarjeta) o **"Me deben"** (alguien te debe a vos) — después completá nombre, monto total y moneda. Cada deuda muestra cuánto se pagó/cobró y cuánto queda pendiente: en rojo si vos debés, en verde si te deben a vos. El botón para registrar movimientos cambia a **"Pagar"** o **"Cobrar"** según el tipo, y ese movimiento también se anota solo en tu ticket (como gasto si pagás, como ingreso si cobrás), así impacta en tu balance del mes. Cuando el saldo llega a cero, se marca como "Saldada" o "Cobrada".
 
 ### Presupuesto por categoría
 
