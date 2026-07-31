@@ -13,7 +13,7 @@
   <!-- PANTALLA DE LOGIN -->
   <div id="login-screen" class="screen">
     <div class="login-card">
-      <div class="login-mark">¢</div>
+      <div class="login-mark">$</div>
       <h1 id="login-title">Tu ticket</h1>
       <p class="login-sub" id="login-subtitle">Anotá cada gasto, ingreso o inversión antes de que se te olvide.</p>
       <form id="login-form">
@@ -32,7 +32,7 @@
 
     <header class="topbar">
       <div class="brand">
-        <span class="brand-mark">¢</span>
+        <span class="brand-mark">$</span>
         <span class="brand-name">Ticket</span>
       </div>
       <button id="logout-btn" class="btn-ghost">Salir</button>
@@ -218,6 +218,23 @@
       window.logDebug('ERROR: ' + reason);
     });
     window.logDebug('Página cargada, iniciando app.js...');
+
+    // Diagnóstico oculto: tocar el logo 5 veces seguidas lo muestra/oculta
+    let tapCount = 0;
+    let tapTimer = null;
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.brand-mark, .login-mark').forEach((el) => {
+        el.addEventListener('click', () => {
+          tapCount++;
+          clearTimeout(tapTimer);
+          tapTimer = setTimeout(() => { tapCount = 0; }, 1500);
+          if (tapCount >= 5) {
+            document.getElementById('debug-box').classList.toggle('debug-visible');
+            tapCount = 0;
+          }
+        });
+      });
+    });
   </script>
   <script type="module" src="app.js"></script>
 </body>
