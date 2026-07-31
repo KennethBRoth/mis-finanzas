@@ -39,6 +39,7 @@
   <!-- ONBOARDING (primera vez) -->
   <div id="onboarding-screen" class="screen hidden">
     <div class="onboarding-card">
+      <div class="login-mark" style="margin:0 auto 16px;">$</div>
       <h1>Antes de arrancar</h1>
       <p class="login-sub">Si ya tenías plata ahorrada, inversiones o deudas, cargalas acá para que tu balance arranque bien desde el día uno. Es opcional — podés saltear este paso y cargar todo después a mano.</p>
 
@@ -234,6 +235,10 @@
       <p class="config-hint">Cargá lo que debés y anotá cada pago que hagas para ver cuánto te queda.</p>
 
       <div id="debt-form" class="config-form hidden">
+        <div class="type-selector" id="debt-type-selector">
+          <button type="button" class="type-btn type-gasto active" data-debttype="debo">Debo</button>
+          <button type="button" class="type-btn type-ingreso" data-debttype="me_deben">Me deben</button>
+        </div>
         <input type="text" id="debt-name" placeholder="Nombre (ej. Tarjeta Visa, Préstamo auto)" autocomplete="off">
         <div class="config-row">
           <div class="config-field">
@@ -262,6 +267,9 @@
       const line = document.createElement('div');
       line.textContent = new Date().toLocaleTimeString('es-AR') + ' — ' + msg;
       box.appendChild(line);
+      if (msg.includes('ERROR') || msg.includes('FALLÓ')) {
+        box.classList.add('debug-visible');
+      }
     };
     window.addEventListener('error', (e) => window.logDebug('ERROR: ' + e.message));
     window.addEventListener('unhandledrejection', (e) => {
