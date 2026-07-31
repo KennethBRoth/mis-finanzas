@@ -24,18 +24,14 @@ App para anotar gastos, ingresos e inversiones en segundos, desde el celular o l
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /usuarios/{userId}/movimientos/{docId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    match /usuarios/{userId}/config/{docId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    match /usuarios/{userId}/recurrentes/{docId} {
+    match /usuarios/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }
 ```
+
+Esta única regla cubre todo lo que guarda la app (movimientos, categorías, presupuestos, recurrentes, deudas) y también lo que se agregue en el futuro — no vas a tener que volver a tocarla.
 
 Esto hace que solo vos (con tu login) puedas leer o escribir tus propios datos. Hacé clic en **"Publicar"**.
 
@@ -101,6 +97,10 @@ Al lado de "Forma de pago" hay un link **"Editar formas de pago"** que funciona 
 ### Cuentas de varias personas
 
 Ahora en la pantalla de login hay un link **"¿No tenés cuenta? Creá una"** — cualquiera puede crear su propio usuario con su email y contraseña, directamente desde la app (no hace falta que vos lo crees a mano en Firebase). Cada persona ve únicamente sus propios movimientos, categorías, formas de pago, presupuestos y recurrentes — la base de datos separa todo por cuenta y las reglas de Firestore impiden que una vea los datos de otra.
+
+### Deudas
+
+En la sección "Deudas", tocá **"Agregar deuda"** para cargar una: nombre (ej. "Tarjeta Visa"), monto total y moneda. A partir de ahí, cada deuda te muestra cuánto pagaste y cuánto te queda. Cuando hagas un pago, escribí el monto en el campo de esa deuda y tocá **"Pagar"** — se descuenta del saldo pendiente y, además, queda registrado automáticamente como un gasto en tu ticket (categoría "Pago de deuda"), así también impacta en tu balance del mes. Cuando el saldo llega a cero, la deuda se marca como "Saldada".
 
 ### Presupuesto por categoría
 
