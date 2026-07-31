@@ -36,6 +36,48 @@
     </div>
   </div>
 
+  <!-- ONBOARDING (primera vez) -->
+  <div id="onboarding-screen" class="screen hidden">
+    <div class="onboarding-card">
+      <h1>Antes de arrancar</h1>
+      <p class="login-sub">Si ya tenías plata ahorrada, inversiones o deudas, cargalas acá para que tu balance arranque bien desde el día uno. Es opcional — podés saltear este paso y cargar todo después a mano.</p>
+
+      <div class="onb-section">
+        <h3>Plata que ya tenés hoy</h3>
+        <p class="config-hint">Efectivo, cuentas bancarias, billeteras virtuales, etc.</p>
+        <div class="config-row">
+          <div class="config-field">
+            <span class="currency-sign">$</span>
+            <input type="number" inputmode="decimal" id="onb-saldo-ars" placeholder="Monto en ARS">
+          </div>
+        </div>
+        <div class="config-row">
+          <div class="config-field">
+            <span class="currency-sign">US$</span>
+            <input type="number" inputmode="decimal" id="onb-saldo-usd" placeholder="Monto en USD (opcional)">
+          </div>
+        </div>
+      </div>
+
+      <div class="onb-section">
+        <h3>Inversiones que ya tenés</h3>
+        <div id="onb-inversiones-list"></div>
+        <button type="button" id="onb-add-inversion" class="link-btn">+ Agregar inversión</button>
+      </div>
+
+      <div class="onb-section">
+        <h3>Deudas que ya tenés</h3>
+        <div id="onb-deudas-list"></div>
+        <button type="button" id="onb-add-deuda" class="link-btn">+ Agregar deuda</button>
+      </div>
+
+      <div class="onb-actions">
+        <button type="button" id="onb-skip-btn" class="link-btn">Omitir por ahora</button>
+        <button type="button" id="onb-save-btn" class="btn-primary">Guardar y empezar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- APP -->
   <div id="app-screen" class="screen hidden">
 
