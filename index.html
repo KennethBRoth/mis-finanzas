@@ -174,6 +174,33 @@
       <div id="budget-list" class="config-list"></div>
     </section>
 
+    <!-- DEUDAS -->
+    <section class="config-section">
+      <div class="config-header">
+        <h2>Deudas</h2>
+        <button type="button" id="toggle-debt-btn" class="link-btn">Agregar deuda</button>
+      </div>
+      <p class="config-hint">Cargá lo que debés y anotá cada pago que hagas para ver cuánto te queda.</p>
+
+      <div id="debt-form" class="config-form hidden">
+        <input type="text" id="debt-name" placeholder="Nombre (ej. Tarjeta Visa, Préstamo auto)" autocomplete="off">
+        <div class="config-row">
+          <div class="config-field">
+            <span class="currency-sign">$</span>
+            <input type="number" inputmode="decimal" id="debt-amount" placeholder="Monto total">
+          </div>
+          <div class="currency-toggle" id="debt-currency-toggle">
+            <button type="button" class="curr-btn active" data-currency="ARS">ARS</button>
+            <button type="button" class="curr-btn" data-currency="USD">USD</button>
+          </div>
+        </div>
+        <input type="text" id="debt-note" placeholder="Nota (opcional)" autocomplete="off">
+        <button type="button" id="save-debt-btn" class="btn-small btn-full">Guardar deuda</button>
+      </div>
+
+      <div id="debt-list" class="config-list"></div>
+    </section>
+
   </div>
 
   <div id="debug-box"></div>
