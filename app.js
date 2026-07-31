@@ -39,6 +39,7 @@ let allEntries = [];
 let recurringDefs = [];
 let debtDefs = [];
 let debtCurrency = 'ARS';
+let debtType = 'debo';
 let budgets = {};
 let unsubscribeEntries = null;
 let unsubscribeRecurring = null;
@@ -113,6 +114,7 @@ const budgetListEl = document.getElementById('budget-list');
 
 const toggleDebtBtn = document.getElementById('toggle-debt-btn');
 const debtForm = document.getElementById('debt-form');
+const debtTypeSelector = document.getElementById('debt-type-selector');
 const debtName = document.getElementById('debt-name');
 const debtAmount = document.getElementById('debt-amount');
 const debtCurrencyToggle = document.getElementById('debt-currency-toggle');
@@ -721,7 +723,7 @@ onbSaveBtn.addEventListener('click', async () => {
       const currency = row.querySelector('.onb-row-currency').value;
       if (!nombre || !monto || monto <= 0) continue;
       await addDoc(collection(db, 'usuarios', user.uid, 'deudas'), {
-        nombre: nombre, montoTotal: monto, currency: currency,
+        nombre: nombre, montoTotal: monto, currency: currency, tipo: 'debo',
         nota: 'Cargada al empezar', montoPagado: 0, createdAt: serverTimestamp()
       });
     }
@@ -738,6 +740,13 @@ onbSaveBtn.addEventListener('click', async () => {
 // ---------- Deudas ----------
 toggleDebtBtn.addEventListener('click', () => {
   debtForm.classList.toggle('hidden');
+});
+
+debtTypeSelector.addEventListener('click', (e) => {
+  const btn = e.target.closest('.type-btn');
+  if (!btn) return;
+  debtType = btn.dataset.debttype;
+  [...debtTypeSelector.children].forEach(b => b.classList.toggle('active', b === btn));
 });
 
 debtCurrencyToggle.addEventListener('click', (e) => {
@@ -760,6 +769,7 @@ saveDebtBtn.addEventListener('click', async () => {
     nombre: nombre,
     montoTotal: monto,
     currency: debtCurrency,
+    tipo: debtType,
     nota: debtNote.value.trim(),
     montoPagado: 0,
     createdAt: serverTimestamp()
@@ -785,19 +795,25 @@ function renderDebtList() {
     return;
   }
   debtDefs.forEach((d) => {
+    const tipo = d.tipo || 'debo'; // compatibilidad con deudas creadas antes de este cambio
     const saldo = d.montoTotal - d.montoPagado;
+    const esDebo = tipo === 'debo';
     const card = document.createElement('div');
     card.className = 'debt-card';
+    const balanceLabel = saldo <= 0
+      ? (esDebo ? 'Saldada' : 'Cobrada')
+      : (esDebo ? '-' + fmt(saldo, d.currency) + ' pendiente' : '+' + fmt(saldo, d.currency) + ' pendiente');
+    const payLabel = esDebo ? 'Pagar' : 'Cobrar';
     card.innerHTML = `
       <div class="debt-card-top">
-        <span class="debt-name">${escapeHtml(d.nombre)}</span>
-        <span class="debt-balance ${saldo <= 0 ? 'paid' : ''}">${saldo <= 0 ? 'Saldada' : '-' + fmt(saldo, d.currency) + ' pendiente'}</span>
+        <span class="debt-name">${escapeHtml(d.nombre)} <span class="debt-tag">${esDebo ? 'Debo' : 'Me deben'}</span></span>
+        <span class="debt-balance ${saldo <= 0 ? 'paid' : (esDebo ? 'owe' : 'owed')}">${balanceLabel}</span>
       </div>
-      <div class="debt-detail">${fmt(d.montoPagado, d.currency)} pagado de ${fmt(d.montoTotal, d.currency)}${d.nota ? ' · ' + escapeHtml(d.nota) : ''}</div>
+      <div class="debt-detail">${fmt(d.montoPagado, d.currency)} ${esDebo ? 'pagado' : 'cobrado'} de ${fmt(d.montoTotal, d.currency)}${d.nota ? ' · ' + escapeHtml(d.nota) : ''}</div>
       ${saldo > 0 ? `
       <div class="debt-pay-row">
-        <input type="number" inputmode="decimal" placeholder="Monto a pagar" class="debt-pay-amount">
-        <button type="button" class="btn-small debt-pay-btn">Pagar</button>
+        <input type="number" inputmode="decimal" placeholder="Monto" class="debt-pay-amount">
+        <button type="button" class="btn-small debt-pay-btn">${payLabel}</button>
       </div>` : ''}
       <div class="debt-card-actions">
         <button type="button" class="debt-del">Eliminar deuda</button>
@@ -824,15 +840,16 @@ async function registerDebtPayment(debt, inputEl) {
     inputEl.focus();
     return;
   }
+  const tipo = debt.tipo || 'debo';
   const nuevoPagado = debt.montoPagado + monto;
   await setDoc(doc(db, 'usuarios', user.uid, 'deudas', debt.id), { montoPagado: nuevoPagado }, { merge: true });
   await addDoc(collection(db, 'usuarios', user.uid, 'movimientos'), {
-    type: 'gasto',
-    category: 'Pago de deuda',
+    type: tipo === 'debo' ? 'gasto' : 'ingreso',
+    category: tipo === 'debo' ? 'Pago de deuda' : 'Cobro de deuda',
     paymentMethod: currentPayment,
     amount: monto,
     currency: debt.currency,
-    note: 'Pago de ' + debt.nombre,
+    note: (tipo === 'debo' ? 'Pago de ' : 'Cobro de ') + debt.nombre,
     date: new Date().toISOString(),
     createdAt: serverTimestamp()
   });
