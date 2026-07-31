@@ -37,9 +37,12 @@ let recurringCurrency = 'ARS';
 
 let allEntries = [];
 let recurringDefs = [];
+let debtDefs = [];
+let debtCurrency = 'ARS';
 let budgets = {};
 let unsubscribeEntries = null;
 let unsubscribeRecurring = null;
+let unsubscribeDebts = null;
 let currentUid = null;
 let viewMode = 'month';
 let rangeFrom = null;
@@ -106,6 +109,15 @@ const saveRecurringBtn = document.getElementById('save-recurring-btn');
 const recurringListEl = document.getElementById('recurring-list');
 
 const budgetListEl = document.getElementById('budget-list');
+
+const toggleDebtBtn = document.getElementById('toggle-debt-btn');
+const debtForm = document.getElementById('debt-form');
+const debtName = document.getElementById('debt-name');
+const debtAmount = document.getElementById('debt-amount');
+const debtCurrencyToggle = document.getElementById('debt-currency-toggle');
+const debtNote = document.getElementById('debt-note');
+const saveDebtBtn = document.getElementById('save-debt-btn');
+const debtListEl = document.getElementById('debt-list');
 
 let authMode = 'login';
 
@@ -182,12 +194,14 @@ onAuthStateChanged(auth, async (user) => {
     renderRecurringCategoryChips();
     subscribeToEntries(user.uid);
     subscribeToRecurring(user.uid);
+    subscribeToDebts(user.uid);
   } else {
     currentUid = null;
     appScreen.classList.add('hidden');
     loginScreen.classList.remove('hidden');
     if (unsubscribeEntries) unsubscribeEntries();
     if (unsubscribeRecurring) unsubscribeRecurring();
+    if (unsubscribeDebts) unsubscribeDebts();
   }
 });
 
@@ -609,6 +623,110 @@ async function generateDueRecurring() {
     await setDoc(doc(db, 'usuarios', user.uid, 'recurrentes', r.id), { ...r, lastGeneratedMonth: currentMonthKey });
     if (window.logDebug) window.logDebug('Recurrente generado: ' + r.note);
   }
+}
+
+// ---------- Deudas ----------
+toggleDebtBtn.addEventListener('click', () => {
+  debtForm.classList.toggle('hidden');
+});
+
+debtCurrencyToggle.addEventListener('click', (e) => {
+  const btn = e.target.closest('.curr-btn');
+  if (!btn) return;
+  debtCurrency = btn.dataset.currency;
+  [...debtCurrencyToggle.children].forEach(b => b.classList.toggle('active', b === btn));
+});
+
+saveDebtBtn.addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const nombre = debtName.value.trim();
+  const monto = parseFloat(debtAmount.value);
+  if (!nombre || !monto || monto <= 0) {
+    alert('Completá el nombre y el monto total de la deuda.');
+    return;
+  }
+  await addDoc(collection(db, 'usuarios', user.uid, 'deudas'), {
+    nombre: nombre,
+    montoTotal: monto,
+    currency: debtCurrency,
+    nota: debtNote.value.trim(),
+    montoPagado: 0,
+    createdAt: serverTimestamp()
+  });
+  debtName.value = '';
+  debtAmount.value = '';
+  debtNote.value = '';
+  debtForm.classList.add('hidden');
+});
+
+function subscribeToDebts(uid) {
+  const q = query(collection(db, 'usuarios', uid, 'deudas'), orderBy('createdAt', 'desc'));
+  unsubscribeDebts = onSnapshot(q, (snap) => {
+    debtDefs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderDebtList();
+  });
+}
+
+function renderDebtList() {
+  debtListEl.innerHTML = '';
+  if (debtDefs.length === 0) {
+    debtListEl.innerHTML = '<p class="empty-state">No tenés deudas cargadas.</p>';
+    return;
+  }
+  debtDefs.forEach((d) => {
+    const saldo = d.montoTotal - d.montoPagado;
+    const card = document.createElement('div');
+    card.className = 'debt-card';
+    card.innerHTML = `
+      <div class="debt-card-top">
+        <span class="debt-name">${escapeHtml(d.nombre)}</span>
+        <span class="debt-balance ${saldo <= 0 ? 'paid' : ''}">${saldo <= 0 ? 'Saldada' : fmt(saldo, d.currency) + ' pendiente'}</span>
+      </div>
+      <div class="debt-detail">${fmt(d.montoPagado, d.currency)} pagado de ${fmt(d.montoTotal, d.currency)}${d.nota ? ' · ' + escapeHtml(d.nota) : ''}</div>
+      ${saldo > 0 ? `
+      <div class="debt-pay-row">
+        <input type="number" inputmode="decimal" placeholder="Monto a pagar" class="debt-pay-amount">
+        <button type="button" class="btn-small debt-pay-btn">Pagar</button>
+      </div>` : ''}
+      <div class="debt-card-actions">
+        <button type="button" class="debt-del">Eliminar deuda</button>
+      </div>
+    `;
+    if (saldo > 0) {
+      const payInput = card.querySelector('.debt-pay-amount');
+      card.querySelector('.debt-pay-btn').addEventListener('click', () => registerDebtPayment(d, payInput));
+    }
+    card.querySelector('.debt-del').addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      await deleteDoc(doc(db, 'usuarios', user.uid, 'deudas', d.id));
+    });
+    debtListEl.appendChild(card);
+  });
+}
+
+async function registerDebtPayment(debt, inputEl) {
+  const user = auth.currentUser;
+  if (!user) return;
+  const monto = parseFloat(inputEl.value);
+  if (!monto || monto <= 0) {
+    inputEl.focus();
+    return;
+  }
+  const nuevoPagado = debt.montoPagado + monto;
+  await setDoc(doc(db, 'usuarios', user.uid, 'deudas', debt.id), { montoPagado: nuevoPagado }, { merge: true });
+  await addDoc(collection(db, 'usuarios', user.uid, 'movimientos'), {
+    type: 'gasto',
+    category: 'Pago de deuda',
+    paymentMethod: currentPayment,
+    amount: monto,
+    currency: debt.currency,
+    note: 'Pago de ' + debt.nombre,
+    date: new Date().toISOString(),
+    createdAt: serverTimestamp()
+  });
+  inputEl.value = '';
 }
 
 function subscribeToEntries(uid) {
