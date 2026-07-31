@@ -739,3 +739,59 @@ body {
   color: var(--ink);
 }
 .budget-item.over .bi-progress { color: var(--gasto); }
+
+/* ---------- Deudas ---------- */
+.debt-card {
+  background: var(--paper);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.debt-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.debt-name { font-weight: 600; font-size: 14px; }
+.debt-balance { font-family: var(--font-mono); font-weight: 500; font-size: 15px; white-space: nowrap; }
+.debt-balance.paid { color: var(--ingreso); }
+
+.debt-detail {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.debt-pay-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.debt-pay-row input {
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--card);
+  color: var(--ink);
+}
+
+.debt-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.debt-del {
+  border: none;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 11.5px;
+  text-decoration: underline;
+  cursor: pointer;
+}
