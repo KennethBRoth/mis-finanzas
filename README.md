@@ -103,6 +103,10 @@ En la sección "Gastos e ingresos recurrentes", tocá **"Agregar"** para cargar 
 
 Al lado de "Forma de pago" hay un link **"Editar formas de pago"** que funciona igual que el de categorías: podés agregar una nueva o borrar las que no uses, con una **×**. Se guarda en tu cuenta (usa el mismo permiso `config` que ya tenías habilitado, así que no hace falta tocar las reglas de Firestore de nuevo).
 
+### Primera vez que entrás
+
+La primera vez que entrás con una cuenta (o si tocás "Omitir" y volvés a entrar más tarde sin haberlo completado, no te lo vuelve a pedir una vez que lo guardás u omitís), la app te ofrece cargar lo que ya tenías: plata en efectivo o cuentas, inversiones existentes y deudas que ya arrastrabas. Es opcional — con **"Omitir por ahora"** entrás directo a la app vacía y podés cargar todo eso más adelante a mano, sin ningún problema. Esto solo aparece una vez por cuenta.
+
 ### Cuentas de varias personas
 
 Ahora en la pantalla de login hay un link **"¿No tenés cuenta? Creá una"** — cualquiera puede crear su propio usuario con su email y contraseña, directamente desde la app (no hace falta que vos lo crees a mano en Firebase). Cada persona ve únicamente sus propios movimientos, categorías, formas de pago, presupuestos y recurrentes — la base de datos separa todo por cuenta y las reglas de Firestore impiden que una vea los datos de otra.
