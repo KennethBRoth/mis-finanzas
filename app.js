@@ -50,6 +50,7 @@ let rangeTo = null;
 
 const loginScreen = document.getElementById('login-screen');
 const appScreen = document.getElementById('app-screen');
+const onboardingScreen = document.getElementById('onboarding-screen');
 const loginForm = document.getElementById('login-form');
 const loginError = document.getElementById('login-error');
 const logoutBtn = document.getElementById('logout-btn');
@@ -119,6 +120,15 @@ const debtNote = document.getElementById('debt-note');
 const saveDebtBtn = document.getElementById('save-debt-btn');
 const debtListEl = document.getElementById('debt-list');
 
+const onbSaldoArs = document.getElementById('onb-saldo-ars');
+const onbSaldoUsd = document.getElementById('onb-saldo-usd');
+const onbInversionesList = document.getElementById('onb-inversiones-list');
+const onbAddInversionBtn = document.getElementById('onb-add-inversion');
+const onbDeudasList = document.getElementById('onb-deudas-list');
+const onbAddDeudaBtn = document.getElementById('onb-add-deuda');
+const onbSkipBtn = document.getElementById('onb-skip-btn');
+const onbSaveBtn = document.getElementById('onb-save-btn');
+
 let authMode = 'login';
 
 toggleSignupBtn.addEventListener('click', () => {
@@ -185,7 +195,6 @@ onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUid = user.uid;
     loginScreen.classList.add('hidden');
-    appScreen.classList.remove('hidden');
     await loadCategories(user.uid);
     await loadPaymentMethods(user.uid);
     await loadBudgets(user.uid);
@@ -195,9 +204,18 @@ onAuthStateChanged(auth, async (user) => {
     subscribeToEntries(user.uid);
     subscribeToRecurring(user.uid);
     subscribeToDebts(user.uid);
+
+    const onbRef = doc(db, 'usuarios', user.uid, 'config', 'onboarding');
+    const onbSnap = await getDoc(onbRef);
+    if (onbSnap.exists() && onbSnap.data().completado) {
+      appScreen.classList.remove('hidden');
+    } else {
+      onboardingScreen.classList.remove('hidden');
+    }
   } else {
     currentUid = null;
     appScreen.classList.add('hidden');
+    onboardingScreen.classList.add('hidden');
     loginScreen.classList.remove('hidden');
     if (unsubscribeEntries) unsubscribeEntries();
     if (unsubscribeRecurring) unsubscribeRecurring();
@@ -624,6 +642,98 @@ async function generateDueRecurring() {
     if (window.logDebug) window.logDebug('Recurrente generado: ' + r.note);
   }
 }
+
+// ---------- Onboarding (primera vez) ----------
+function addOnbRow(container, placeholderName) {
+  const row = document.createElement('div');
+  row.className = 'onb-row';
+  row.innerHTML = `
+    <input type="text" placeholder="${placeholderName}" class="onb-row-name">
+    <input type="number" inputmode="decimal" placeholder="Monto" class="onb-row-amount">
+    <select class="onb-row-currency">
+      <option value="ARS">ARS</option>
+      <option value="USD">USD</option>
+    </select>
+    <button type="button" class="onb-row-del" title="Quitar">×</button>
+  `;
+  row.querySelector('.onb-row-del').addEventListener('click', () => row.remove());
+  container.appendChild(row);
+}
+
+onbAddInversionBtn.addEventListener('click', () => addOnbRow(onbInversionesList, 'Nombre (ej. Plazo fijo)'));
+onbAddDeudaBtn.addEventListener('click', () => addOnbRow(onbDeudasList, 'Nombre (ej. Tarjeta Visa)'));
+
+// Arrancan con una fila vista cada uno
+addOnbRow(onbInversionesList, 'Nombre (ej. Plazo fijo)');
+addOnbRow(onbDeudasList, 'Nombre (ej. Tarjeta Visa)');
+
+async function finishOnboarding() {
+  const user = auth.currentUser;
+  if (!user) return;
+  await setDoc(doc(db, 'usuarios', user.uid, 'config', 'onboarding'), { completado: true });
+  onboardingScreen.classList.add('hidden');
+  appScreen.classList.remove('hidden');
+}
+
+onbSkipBtn.addEventListener('click', async () => {
+  await finishOnboarding();
+});
+
+onbSaveBtn.addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  onbSaveBtn.disabled = true;
+  try {
+    const saldoArs = parseFloat(onbSaldoArs.value);
+    const saldoUsd = parseFloat(onbSaldoUsd.value);
+    const now = new Date().toISOString();
+
+    if (saldoArs && saldoArs > 0) {
+      await addDoc(collection(db, 'usuarios', user.uid, 'movimientos'), {
+        type: 'ingreso', category: 'Sueldo', paymentMethod: 'Saldo inicial',
+        amount: saldoArs, currency: 'ARS', note: 'Saldo inicial',
+        date: now, createdAt: serverTimestamp()
+      });
+    }
+    if (saldoUsd && saldoUsd > 0) {
+      await addDoc(collection(db, 'usuarios', user.uid, 'movimientos'), {
+        type: 'ingreso', category: 'Sueldo', paymentMethod: 'Saldo inicial',
+        amount: saldoUsd, currency: 'USD', note: 'Saldo inicial',
+        date: now, createdAt: serverTimestamp()
+      });
+    }
+
+    for (const row of onbInversionesList.querySelectorAll('.onb-row')) {
+      const nombre = row.querySelector('.onb-row-name').value.trim();
+      const monto = parseFloat(row.querySelector('.onb-row-amount').value);
+      const currency = row.querySelector('.onb-row-currency').value;
+      if (!nombre || !monto || monto <= 0) continue;
+      await addDoc(collection(db, 'usuarios', user.uid, 'movimientos'), {
+        type: 'inversion', category: 'Otros', paymentMethod: 'Saldo inicial',
+        amount: monto, currency: currency, note: nombre,
+        date: now, createdAt: serverTimestamp()
+      });
+    }
+
+    for (const row of onbDeudasList.querySelectorAll('.onb-row')) {
+      const nombre = row.querySelector('.onb-row-name').value.trim();
+      const monto = parseFloat(row.querySelector('.onb-row-amount').value);
+      const currency = row.querySelector('.onb-row-currency').value;
+      if (!nombre || !monto || monto <= 0) continue;
+      await addDoc(collection(db, 'usuarios', user.uid, 'deudas'), {
+        nombre: nombre, montoTotal: monto, currency: currency,
+        nota: 'Cargada al empezar', montoPagado: 0, createdAt: serverTimestamp()
+      });
+    }
+
+    await finishOnboarding();
+  } catch (err) {
+    alert('No se pudo guardar. Probá de nuevo.');
+    if (window.logDebug) window.logDebug('Onboarding FALLÓ: ' + err.message);
+  } finally {
+    onbSaveBtn.disabled = false;
+  }
+});
 
 // ---------- Deudas ----------
 toggleDebtBtn.addEventListener('click', () => {
