@@ -757,8 +757,22 @@ body {
 }
 
 .debt-name { font-weight: 600; font-size: 14px; }
-.debt-balance { font-family: var(--font-mono); font-weight: 500; font-size: 15px; white-space: nowrap; color: var(--gasto); }
-.debt-balance.paid { color: var(--ingreso); }
+.debt-tag {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  background: var(--card);
+  border-radius: 999px;
+  padding: 2px 7px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.debt-balance { font-family: var(--font-mono); font-weight: 500; font-size: 15px; white-space: nowrap; }
+.debt-balance.owe { color: var(--gasto); }
+.debt-balance.owed { color: var(--ingreso); }
+.debt-balance.paid { color: var(--ink-soft); }
 
 .debt-detail {
   font-size: 11.5px;
