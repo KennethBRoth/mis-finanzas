@@ -757,7 +757,7 @@ body {
 }
 
 .debt-name { font-weight: 600; font-size: 14px; }
-.debt-balance { font-family: var(--font-mono); font-weight: 500; font-size: 15px; white-space: nowrap; }
+.debt-balance { font-family: var(--font-mono); font-weight: 500; font-size: 15px; white-space: nowrap; color: var(--gasto); }
 .debt-balance.paid { color: var(--ingreso); }
 
 .debt-detail {
