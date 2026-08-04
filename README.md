@@ -118,3 +118,7 @@ En la sección "Deudas", tocá **"Agregar deuda"** y elegí primero si **"Debo"*
 ### Presupuesto por categoría
 
 En "Presupuesto por categoría" vas a ver todas tus categorías de gasto con lo que llevás gastado este mes. Si le ponés un límite a una categoría, la app te avisa arriba (en el balance) apenas te pasás de ese monto. Dejar el campo vacío significa "sin límite".
+
+### Inversión total acumulada
+
+Abajo del balance del período hay una línea que dice **"Invertido en total"** — es la suma de todo lo que cargaste como inversión desde que empezaste a usar la app, sin importar qué mes o rango de fechas tengas seleccionado arriba. El balance de arriba sí cambia según el período; este número no.
