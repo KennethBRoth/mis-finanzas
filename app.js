@@ -90,6 +90,7 @@ const historyList = document.getElementById('history-list');
 const monthFilter = document.getElementById('month-filter');
 const balancePeriodLabel = document.getElementById('balance-period-label');
 const balanceCardsEl = document.getElementById('balance-cards');
+const investmentTotalEl = document.getElementById('investment-total');
 const budgetAlertsEl = document.getElementById('budget-alerts');
 
 const toggleRangeBtn = document.getElementById('toggle-range-btn');
@@ -715,6 +716,12 @@ onbSaveBtn.addEventListener('click', async () => {
         amount: monto, currency: currency, note: nombre,
         date: now, createdAt: serverTimestamp()
       });
+      // Contrapartida: esta plata ya la tenías, no "salió" de ningún lado hoy
+      await addDoc(collection(db, 'usuarios', user.uid, 'movimientos'), {
+        type: 'ingreso', category: 'Otros', paymentMethod: 'Saldo inicial',
+        amount: monto, currency: currency, note: 'Contrapartida: ' + nombre,
+        date: now, createdAt: serverTimestamp()
+      });
     }
 
     for (const row of onbDeudasList.querySelectorAll('.onb-row')) {
@@ -927,6 +934,7 @@ function renderAll() {
 
   renderHistory();
   renderSummary();
+  renderInvestmentTotal();
   renderBudgetList();
   renderBudgetAlerts();
 }
@@ -991,6 +999,18 @@ function renderSummary() {
     `;
     balanceCardsEl.appendChild(card);
   });
+}
+
+function renderInvestmentTotal() {
+  const totals = { ARS: 0, USD: 0 };
+  allEntries.forEach(e => {
+    if (e.type === 'inversion') totals[e.currency || 'ARS'] += e.amount;
+  });
+  investmentTotalEl.innerHTML = `
+    <span class="it-label">Invertido en total</span>
+    <span class="it-item"><b>${fmt(totals.ARS, 'ARS')}</b></span>
+    ${totals.USD > 0 ? `<span class="it-item"><b>${fmt(totals.USD, 'USD')}</b></span>` : ''}
+  `;
 }
 
 monthFilter.addEventListener('change', () => {
