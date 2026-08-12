@@ -833,8 +833,16 @@ function renderDebtList() {
       <div class="debt-detail">${fmt(d.montoPagado, d.currency)} ${esDebo ? 'pagado' : 'cobrado'} de ${fmt(d.montoTotal, d.currency)}${d.nota ? ' · ' + escapeHtml(d.nota) : ''}</div>
       ${saldo > 0 ? `
       <div class="debt-pay-row">
-        <input type="number" inputmode="decimal" placeholder="Monto" class="debt-pay-amount">
+        <input type="number" inputmode="decimal" placeholder="Monto en ${d.currency}" class="debt-pay-amount">
         <button type="button" class="btn-small debt-pay-btn">${payLabel}</button>
+      </div>
+      <button type="button" class="link-btn debt-pay-othercur-toggle">¿${esDebo ? 'Pagaste' : 'Cobraste'} en otra moneda?</button>
+      <div class="debt-pay-othercur hidden">
+        <select class="debt-pay-othercur-select">
+          <option value="ARS" ${d.currency === 'ARS' ? 'disabled' : ''}>ARS</option>
+          <option value="USD" ${d.currency === 'USD' ? 'disabled' : ''}>USD</option>
+        </select>
+        <input type="number" inputmode="decimal" placeholder="Monto real ${esDebo ? 'pagado' : 'cobrado'}" class="debt-pay-othercur-amount">
       </div>` : ''}
       <div class="debt-card-actions">
         <button type="button" class="debt-del">Eliminar deuda</button>
@@ -842,7 +850,20 @@ function renderDebtList() {
     `;
     if (saldo > 0) {
       const payInput = card.querySelector('.debt-pay-amount');
-      card.querySelector('.debt-pay-btn').addEventListener('click', () => registerDebtPayment(d, payInput));
+      const otherCurToggle = card.querySelector('.debt-pay-othercur-toggle');
+      const otherCurBox = card.querySelector('.debt-pay-othercur');
+      const otherCurSelect = card.querySelector('.debt-pay-othercur-select');
+      const otherCurAmount = card.querySelector('.debt-pay-othercur-amount');
+      otherCurToggle.addEventListener('click', () => otherCurBox.classList.toggle('hidden'));
+      card.querySelector('.debt-pay-btn').addEventListener('click', () => {
+        const usingOtherCur = !otherCurBox.classList.contains('hidden') && otherCurAmount.value;
+        registerDebtPayment(
+          d, payInput,
+          usingOtherCur ? otherCurSelect.value : null,
+          usingOtherCur ? otherCurAmount.value : null
+        );
+        otherCurAmount.value = '';
+      });
     }
     card.querySelector('.debt-del').addEventListener('click', async () => {
       const user = auth.currentUser;
@@ -853,7 +874,7 @@ function renderDebtList() {
   });
 }
 
-async function registerDebtPayment(debt, inputEl) {
+async function registerDebtPayment(debt, inputEl, otherCurrency, otherAmount) {
   const user = auth.currentUser;
   if (!user) return;
   const monto = parseFloat(inputEl.value);
@@ -864,13 +885,18 @@ async function registerDebtPayment(debt, inputEl) {
   const tipo = debt.tipo || 'debo';
   const nuevoPagado = debt.montoPagado + monto;
   await setDoc(doc(db, 'usuarios', user.uid, 'deudas', debt.id), { montoPagado: nuevoPagado }, { merge: true });
+
+  const realCurrency = otherCurrency || debt.currency;
+  const realAmount = otherAmount ? parseFloat(otherAmount) : monto;
+
   await addDoc(collection(db, 'usuarios', user.uid, 'movimientos'), {
     type: tipo === 'debo' ? 'gasto' : 'ingreso',
     category: tipo === 'debo' ? 'Pago de deuda' : 'Cobro de deuda',
     paymentMethod: currentPayment,
-    amount: monto,
-    currency: debt.currency,
-    note: (tipo === 'debo' ? 'Pago de ' : 'Cobro de ') + debt.nombre,
+    amount: realAmount,
+    currency: realCurrency,
+    note: (tipo === 'debo' ? 'Pago de ' : 'Cobro de ') + debt.nombre +
+      (realCurrency !== debt.currency ? ' (deuda en ' + debt.currency + ', pagado en ' + realCurrency + ')' : ''),
     date: new Date().toISOString(),
     createdAt: serverTimestamp()
   });
