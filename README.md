@@ -115,6 +115,8 @@ Ahora en la pantalla de login hay un link **"¿No tenés cuenta? Creá una"** �
 
 En la sección "Deudas", tocá **"Agregar deuda"** y elegí primero si **"Debo"** (le debés a alguien, ej. una tarjeta) o **"Me deben"** (alguien te debe a vos) — después completá nombre, monto total y moneda. Cada deuda muestra cuánto se pagó/cobró y cuánto queda pendiente: en rojo si vos debés, en verde si te deben a vos. El botón para registrar movimientos cambia a **"Pagar"** o **"Cobrar"** según el tipo, y ese movimiento también se anota solo en tu ticket (como gasto si pagás, como ingreso si cobrás), así impacta en tu balance del mes. Cuando el saldo llega a cero, se marca como "Saldada" o "Cobrada".
 
+Si pagás o cobrás una deuda usando una moneda distinta a la de la deuda (ej. una deuda en USD que pagás con pesos), tocá **"¿Pagaste en otra moneda?"** antes de confirmar: el primer monto sigue descontando el saldo en la moneda de la deuda, pero podés indicar el monto real y la moneda con la que se movió la plata, para que el balance de esa moneda quede correcto.
+
 ### Presupuesto por categoría
 
 En "Presupuesto por categoría" vas a ver todas tus categorías de gasto con lo que llevás gastado este mes. Si le ponés un límite a una categoría, la app te avisa arriba (en el balance) apenas te pasás de ese monto. Dejar el campo vacío significa "sin límite".
