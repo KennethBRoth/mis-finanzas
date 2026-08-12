@@ -76,7 +76,7 @@ Ahora la app tiene una cajita de diagnóstico: al abrirla, vas a ver un recuadro
 
 ## Cómo se usa
 
-- Elegís si es **Gasto**, **Ingreso** o **Inversión**.
+- Elegís si es **Gasto**, **Ingreso** o **Inversión**. Si elegís Inversión, aparece un segundo selector: **"Aporto"** (metés plata a una inversión) o **"Retiro"** (sacás plata de una inversión) — un retiro suma a tu balance en vez de restar, y baja el total invertido.
 - Tocás el monto (el teclado numérico se abre solo en el celular).
 - Elegís una categoría (chip).
 - Elegís la **forma de pago** (Efectivo, Débito, Crédito, Transferencia, Billetera virtual).
