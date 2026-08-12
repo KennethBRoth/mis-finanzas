@@ -827,6 +827,38 @@ body {
   cursor: pointer;
 }
 
+.debt-pay-othercur-toggle {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+.debt-pay-othercur {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.debt-pay-othercur select {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 6px;
+  font-size: 12.5px;
+  background: var(--card);
+  color: var(--ink);
+}
+
+.debt-pay-othercur input {
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--card);
+  color: var(--ink);
+}
+
 /* ---------- Onboarding ---------- */
 #onboarding-screen {
   min-height: 100vh;
