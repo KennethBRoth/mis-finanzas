@@ -30,6 +30,7 @@ let currentType = 'gasto';
 let currentCategory = CATEGORIES.gasto[0];
 let currentPayment = PAYMENT_METHODS[0];
 let currentCurrency = 'ARS';
+let currentInvestmentDirection = 'aporte';
 
 let recurringType = 'gasto';
 let recurringCategory = CATEGORIES.gasto[0];
@@ -62,6 +63,7 @@ const loginSubmitBtn = document.getElementById('login-submit-btn');
 const toggleSignupBtn = document.getElementById('toggle-signup-btn');
 
 const typeSelector = document.getElementById('type-selector');
+const investmentDirectionSelector = document.getElementById('investment-direction-selector');
 const chipsContainer = document.getElementById('category-chips');
 const paymentChipsContainer = document.getElementById('payment-chips');
 const amountInput = document.getElementById('amount-input');
@@ -347,6 +349,17 @@ typeSelector.addEventListener('click', (e) => {
   currentCategory = CATEGORIES[currentType][0];
   renderChips();
   if (!categoryEditor.classList.contains('hidden')) renderCategoryEditor();
+
+  investmentDirectionSelector.classList.toggle('hidden', currentType !== 'inversion');
+  currentInvestmentDirection = 'aporte';
+  [...investmentDirectionSelector.children].forEach(b => b.classList.toggle('active', b.dataset.direction === 'aporte'));
+});
+
+investmentDirectionSelector.addEventListener('click', (e) => {
+  const btn = e.target.closest('.type-btn');
+  if (!btn) return;
+  currentInvestmentDirection = btn.dataset.direction;
+  [...investmentDirectionSelector.children].forEach(b => b.classList.toggle('active', b === btn));
 });
 
 function renderChips() {
@@ -508,6 +521,7 @@ addBtn.addEventListener('click', async () => {
       paymentMethod: currentPayment,
       amount: amount,
       currency: currentCurrency,
+      direccion: currentType === 'inversion' ? currentInvestmentDirection : null,
       note: noteInput.value.trim(),
       date: now.toISOString(),
       createdAt: serverTimestamp()
@@ -882,15 +896,23 @@ function fmt(n, currency) {
   return sign + ' ' + Math.round(n).toLocaleString('es-AR');
 }
 
+function signedInversion(entry) {
+  return entry.direccion === 'retiro' ? -entry.amount : entry.amount;
+}
+
 function entryRow(entry) {
   const row = document.createElement('div');
   row.className = 'entry-row';
+  let sign = '+';
+  if (entry.type === 'gasto') sign = '-';
+  else if (entry.type === 'inversion') sign = entry.direccion === 'retiro' ? '+' : '-';
+  const dirTag = entry.type === 'inversion' ? (entry.direccion === 'retiro' ? ' (retiro)' : '') : '';
   row.innerHTML = `
-    <span class="entry-cat">${entry.category}</span>
+    <span class="entry-cat">${entry.category}${dirTag}</span>
     ${entry.paymentMethod ? '<span class="entry-payment">' + escapeHtml(entry.paymentMethod) + '</span>' : ''}
     ${entry.note ? '<span class="entry-note">' + escapeHtml(entry.note) + '</span>' : ''}
     <span class="entry-fill"></span>
-    <span class="entry-amount ${entry.type}">${entry.type === 'gasto' ? '-' : '+'}${fmt(entry.amount, entry.currency)}</span>
+    <span class="entry-amount ${entry.type}">${sign}${fmt(entry.amount, entry.currency)}</span>
     <button class="entry-del" title="Eliminar" data-id="${entry.id}">×</button>
   `;
   row.querySelector('.entry-del').addEventListener('click', () => deleteEntry(entry.id));
@@ -983,7 +1005,10 @@ function renderSummary() {
     if (cur === 'USD' && !allEntries.some(e => e.currency === 'USD')) return;
 
     const totals = { gasto: 0, ingreso: 0, inversion: 0 };
-    inCurrency.forEach(e => { totals[e.type] += e.amount; });
+    inCurrency.forEach(e => {
+      if (e.type === 'inversion') totals.inversion += signedInversion(e);
+      else totals[e.type] += e.amount;
+    });
     const balance = totals.ingreso - totals.gasto - totals.inversion;
 
     const card = document.createElement('div');
@@ -1004,7 +1029,7 @@ function renderSummary() {
 function renderInvestmentTotal() {
   const totals = { ARS: 0, USD: 0 };
   allEntries.forEach(e => {
-    if (e.type === 'inversion') totals[e.currency || 'ARS'] += e.amount;
+    if (e.type === 'inversion') totals[e.currency || 'ARS'] += signedInversion(e);
   });
   investmentTotalEl.innerHTML = `
     <span class="it-label">Invertido en total</span>
