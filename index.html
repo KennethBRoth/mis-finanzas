@@ -2,305 +2,187 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Ticket · Mis finanzas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 
-<!-- Ícono y comportamiento al agregar a la pantalla de inicio -->
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ticket">
 <meta name="theme-color" content="#201E1B">
 </head>
 <body>
 
-  <!-- PANTALLA DE LOGIN -->
-  <div id="login-screen" class="screen">
-    <div class="login-card">
-      <div class="login-mark">$</div>
-      <h1 id="login-title">Tu ticket</h1>
-      <p class="login-sub" id="login-subtitle">Anotá cada gasto, ingreso o inversión antes de que se te olvide.</p>
-      <form id="login-form">
-        <input type="email" id="login-email" placeholder="Email" autocomplete="username" required>
-        <input type="password" id="login-password" placeholder="Contraseña" autocomplete="current-password" required>
-        <input type="password" id="login-password-confirm" placeholder="Repetir contraseña" autocomplete="new-password" class="hidden">
-        <button type="submit" class="btn-primary" id="login-submit-btn">Entrar</button>
+<!-- LOGIN -->
+<div id="login" class="screen">
+  <form id="login-form" class="login-card" autocomplete="on">
+    <div class="mark">$</div>
+    <h1>Ticket</h1>
+    <p class="muted">Anotá cada gasto en segundos.</p>
+    <input id="login-email" type="email" placeholder="Email" autocomplete="username" required>
+    <input id="login-pass" type="password" placeholder="Contraseña" autocomplete="current-password" required>
+    <button class="btn primary" type="submit">Entrar</button>
+    <p id="login-error" class="error" role="alert"></p>
+  </form>
+</div>
+
+<!-- APP -->
+<div id="app" class="screen hidden">
+  <main>
+
+    <!-- INICIO -->
+    <section id="tab-inicio" class="tab">
+      <div class="summary" id="home-summary"></div>
+      <div id="home-alerts"></div>
+
+      <form id="add-form" class="card" autocomplete="off">
+        <div class="seg" id="type-seg" role="tablist">
+          <button type="button" data-type="gasto" class="on">Gasto</button>
+          <button type="button" data-type="ingreso">Ingreso</button>
+          <button type="button" data-type="inversion">Inversión</button>
+        </div>
+
+        <div class="seg small hidden" id="dir-seg">
+          <button type="button" data-dir="aporte" class="on">Aporto</button>
+          <button type="button" data-dir="retiro">Retiro</button>
+        </div>
+
+        <div class="amount-row">
+          <div class="seg small" id="cur-seg">
+            <button type="button" data-cur="ARS" class="on">ARS</button>
+            <button type="button" data-cur="USD">USD</button>
+          </div>
+          <input id="amount" type="text" inputmode="decimal" placeholder="0" aria-label="Monto">
+        </div>
+
+        <div class="chips" id="cat-chips"></div>
+
+        <div class="row2">
+          <select id="pay" aria-label="Forma de pago"></select>
+          <input id="note" type="text" placeholder="Nota (opcional)" maxlength="80">
+        </div>
+
+        <button class="btn primary big" type="submit" id="add-btn">Guardar</button>
       </form>
-      <p id="login-error" class="login-error"></p>
-      <button type="button" id="toggle-signup-btn" class="link-btn">¿No tenés cuenta? Creá una</button>
-    </div>
-  </div>
 
-  <!-- ONBOARDING (primera vez) -->
-  <div id="onboarding-screen" class="screen hidden">
-    <div class="onboarding-card">
-      <div class="login-mark" style="margin:0 auto 16px;">$</div>
-      <h1>Antes de arrancar</h1>
-      <p class="login-sub">Si ya tenías plata ahorrada, inversiones o deudas, cargalas acá para que tu balance arranque bien desde el día uno. Es opcional — podés saltear este paso y cargar todo después a mano.</p>
-
-      <div class="onb-section">
-        <h3>Plata que ya tenés hoy</h3>
-        <p class="config-hint">Efectivo, cuentas bancarias, billeteras virtuales, etc.</p>
-        <div class="config-row">
-          <div class="config-field">
-            <span class="currency-sign">$</span>
-            <input type="number" inputmode="decimal" id="onb-saldo-ars" placeholder="Monto en ARS">
-          </div>
-        </div>
-        <div class="config-row">
-          <div class="config-field">
-            <span class="currency-sign">US$</span>
-            <input type="number" inputmode="decimal" id="onb-saldo-usd" placeholder="Monto en USD (opcional)">
-          </div>
-        </div>
-      </div>
-
-      <div class="onb-section">
-        <h3>Inversiones que ya tenés</h3>
-        <div id="onb-inversiones-list"></div>
-        <button type="button" id="onb-add-inversion" class="link-btn">+ Agregar inversión</button>
-      </div>
-
-      <div class="onb-section">
-        <h3>Deudas que ya tenés</h3>
-        <div id="onb-deudas-list"></div>
-        <button type="button" id="onb-add-deuda" class="link-btn">+ Agregar deuda</button>
-      </div>
-
-      <div class="onb-actions">
-        <button type="button" id="onb-skip-btn" class="link-btn">Omitir por ahora</button>
-        <button type="button" id="onb-save-btn" class="btn-primary">Guardar y empezar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- APP -->
-  <div id="app-screen" class="screen hidden">
-
-    <header class="topbar">
-      <div class="brand">
-        <span class="brand-mark">$</span>
-        <span class="brand-name">Ticket</span>
-      </div>
-      <button id="logout-btn" class="btn-ghost">Salir</button>
-    </header>
-
-    <!-- BALANCE -->
-    <section class="balance-block">
-      <span class="balance-label" id="balance-period-label">Balance del mes</span>
-      <div id="balance-cards"></div>
-      <div id="investment-total" class="investment-total"></div>
-      <div id="budget-alerts" class="budget-alerts"></div>
-    </section>
-
-    <!-- QUICK ADD -->
-    <section class="quick-add" id="quick-add">
-      <div class="type-selector" id="type-selector">
-        <button type="button" class="type-btn type-gasto active" data-type="gasto">Gasto</button>
-        <button type="button" class="type-btn type-ingreso" data-type="ingreso">Ingreso</button>
-        <button type="button" class="type-btn type-inversion" data-type="inversion">Inversión</button>
-      </div>
-
-      <div class="type-selector hidden" id="investment-direction-selector">
-        <button type="button" class="type-btn type-inversion active" data-direction="aporte">Aporto</button>
-        <button type="button" class="type-btn type-ingreso" data-direction="retiro">Retiro</button>
-      </div>
-
-      <div class="amount-row">
-        <span class="currency-sign" id="currency-sign-label">$</span>
-        <input type="number" inputmode="decimal" id="amount-input" placeholder="0" autocomplete="off">
-      </div>
-      <div class="currency-toggle" id="currency-toggle">
-        <button type="button" class="curr-btn active" data-currency="ARS">ARS</button>
-        <button type="button" class="curr-btn" data-currency="USD">USD</button>
-      </div>
-
-      <div class="chips-row-label">
-        <span>Categoría</span>
-        <button type="button" id="edit-categories-btn" class="link-btn">Editar categorías</button>
-      </div>
-      <div class="chips" id="category-chips"></div>
-
-      <div id="category-editor" class="category-editor hidden">
-        <div class="cat-editor-list" id="cat-editor-list"></div>
-        <div class="cat-editor-add">
-          <input type="text" id="new-category-input" placeholder="Nueva categoría" autocomplete="off">
-          <button type="button" id="add-category-btn" class="btn-small">Agregar</button>
-        </div>
-        <button type="button" id="close-editor-btn" class="link-btn">Listo</button>
-      </div>
-
-      <div class="chips-row-label">
-        <span>Forma de pago</span>
-        <button type="button" id="edit-payments-btn" class="link-btn">Editar formas de pago</button>
-      </div>
-      <div class="chips" id="payment-chips"></div>
-
-      <div id="payment-editor" class="category-editor hidden">
-        <div class="cat-editor-list" id="payment-editor-list"></div>
-        <div class="cat-editor-add">
-          <input type="text" id="new-payment-input" placeholder="Nueva forma de pago" autocomplete="off">
-          <button type="button" id="add-payment-btn" class="btn-small">Agregar</button>
-        </div>
-        <button type="button" id="close-payment-editor-btn" class="link-btn">Listo</button>
-      </div>
-
-      <input type="text" id="note-input" class="note-input" placeholder="Nota (opcional)" autocomplete="off">
-
-      <button id="add-btn" class="btn-print">
-        <span>Imprimir en el ticket</span>
-      </button>
-    </section>
-
-    <!-- TICKET DE HOY -->
-    <section class="ticket-section">
-      <div class="ticket-header">
-        <h2>Hoy</h2>
-        <span id="today-date"></span>
-      </div>
-      <div class="perforation"></div>
-      <div id="today-list" class="ticket-list">
-        <p class="empty-state">Todavía no cargaste nada hoy. Arriba tenés el primer renglón.</p>
-      </div>
+      <h2>Hoy</h2>
+      <div id="today-list" class="list"></div>
     </section>
 
     <!-- HISTORIAL -->
-    <section class="history-section">
-      <div class="history-header">
-        <h2>Historial</h2>
-        <div class="history-controls">
-          <select id="month-filter"></select>
-          <button type="button" id="toggle-range-btn" class="link-btn">Rango personalizado</button>
-        </div>
+    <section id="tab-historial" class="tab hidden">
+      <div class="month-nav">
+        <button class="icon-btn" id="prev-month" aria-label="Mes anterior">‹</button>
+        <strong id="month-label"></strong>
+        <button class="icon-btn" id="next-month" aria-label="Mes siguiente">›</button>
       </div>
-      <div id="range-picker" class="range-picker hidden">
-        <input type="date" id="range-from">
-        <span>a</span>
-        <input type="date" id="range-to">
-        <button type="button" id="apply-range-btn" class="btn-small">Ver</button>
-        <button type="button" id="cancel-range-btn" class="link-btn">Volver a mes</button>
-      </div>
-      <div id="history-list" class="ticket-list"></div>
-    </section>
-
-    <!-- RECURRENTES -->
-    <section class="config-section">
-      <div class="config-header">
-        <h2>Gastos e ingresos recurrentes</h2>
-        <button type="button" id="toggle-recurring-btn" class="link-btn">Agregar</button>
-      </div>
-      <p class="config-hint">Se cargan solos cada mes en la fecha que elijas (ej. alquiler, sueldo, servicios).</p>
-
-      <div id="recurring-form" class="config-form hidden">
-        <div class="type-selector" id="recurring-type-selector">
-          <button type="button" class="type-btn type-gasto active" data-type="gasto">Gasto</button>
-          <button type="button" class="type-btn type-ingreso" data-type="ingreso">Ingreso</button>
-          <button type="button" class="type-btn type-inversion" data-type="inversion">Inversión</button>
-        </div>
-        <input type="text" id="recurring-note" placeholder="Nombre (ej. Alquiler)" autocomplete="off">
-        <div class="chips" id="recurring-category-chips"></div>
-        <div class="config-row">
-          <div class="config-field">
-            <span class="currency-sign">$</span>
-            <input type="number" inputmode="decimal" id="recurring-amount" placeholder="Monto">
-          </div>
-          <div class="currency-toggle" id="recurring-currency-toggle">
-            <button type="button" class="curr-btn active" data-currency="ARS">ARS</button>
-            <button type="button" class="curr-btn" data-currency="USD">USD</button>
-          </div>
-        </div>
-        <label class="config-label">Día del mes en que se carga
-          <input type="number" id="recurring-day" min="1" max="28" value="1">
-        </label>
-        <button type="button" id="save-recurring-btn" class="btn-small btn-full">Guardar recurrente</button>
-      </div>
-
-      <div id="recurring-list" class="config-list"></div>
-    </section>
-
-    <!-- PRESUPUESTOS -->
-    <section class="config-section">
-      <div class="config-header">
-        <h2>Presupuesto por categoría</h2>
-      </div>
-      <p class="config-hint">Poné un límite mensual para las categorías de gasto que quieras controlar. Dejá vacío para no fijar límite.</p>
-      <div id="budget-list" class="config-list"></div>
+      <div class="summary" id="hist-summary"></div>
+      <div id="invested-total" class="invested"></div>
+      <div id="hist-list" class="list"></div>
     </section>
 
     <!-- DEUDAS -->
-    <section class="config-section">
-      <div class="config-header">
-        <h2>Deudas</h2>
-        <button type="button" id="toggle-debt-btn" class="link-btn">Agregar deuda</button>
-      </div>
-      <p class="config-hint">Cargá lo que debés y anotá cada pago que hagas para ver cuánto te queda.</p>
-
-      <div id="debt-form" class="config-form hidden">
-        <div class="type-selector" id="debt-type-selector">
-          <button type="button" class="type-btn type-gasto active" data-debttype="debo">Debo</button>
-          <button type="button" class="type-btn type-ingreso" data-debttype="me_deben">Me deben</button>
+    <section id="tab-deudas" class="tab hidden">
+      <div class="head-row"><h2>Deudas</h2><button class="btn small" id="toggle-debt-form">+ Nueva</button></div>
+      <form id="debt-form" class="card hidden" autocomplete="off">
+        <div class="seg" id="debt-type-seg">
+          <button type="button" data-dt="debo" class="on">Debo</button>
+          <button type="button" data-dt="medeben">Me deben</button>
         </div>
-        <input type="text" id="debt-name" placeholder="Nombre (ej. Tarjeta Visa, Préstamo auto)" autocomplete="off">
-        <div class="config-row">
-          <div class="config-field">
-            <span class="currency-sign">$</span>
-            <input type="number" inputmode="decimal" id="debt-amount" placeholder="Monto total">
+        <input id="debt-name" type="text" placeholder="Nombre (ej. Tarjeta Visa)" maxlength="60" required>
+        <div class="amount-row">
+          <div class="seg small" id="debt-cur-seg">
+            <button type="button" data-cur="ARS" class="on">ARS</button>
+            <button type="button" data-cur="USD">USD</button>
           </div>
-          <div class="currency-toggle" id="debt-currency-toggle">
-            <button type="button" class="curr-btn active" data-currency="ARS">ARS</button>
-            <button type="button" class="curr-btn" data-currency="USD">USD</button>
-          </div>
+          <input id="debt-amount" type="text" inputmode="decimal" placeholder="Monto total" required>
         </div>
-        <input type="text" id="debt-note" placeholder="Nota (opcional)" autocomplete="off">
-        <button type="button" id="save-debt-btn" class="btn-small btn-full">Guardar deuda</button>
-      </div>
-
-      <div id="debt-list" class="config-list"></div>
+        <button class="btn primary" type="submit">Guardar deuda</button>
+      </form>
+      <div id="debt-list" class="list"></div>
     </section>
 
-  </div>
+    <!-- MÁS -->
+    <section id="tab-mas" class="tab hidden">
+      <h2>Presupuestos</h2>
+      <p class="muted">Límite mensual en pesos por categoría de gasto. Vacío = sin límite.</p>
+      <div id="budget-list" class="card list"></div>
 
-  <div id="debug-box"></div>
+      <div class="head-row"><h2>Recurrentes</h2><button class="btn small" id="toggle-rec-form">+ Nuevo</button></div>
+      <form id="rec-form" class="card hidden" autocomplete="off">
+        <div class="seg" id="rec-type-seg">
+          <button type="button" data-type="gasto" class="on">Gasto</button>
+          <button type="button" data-type="ingreso">Ingreso</button>
+        </div>
+        <input id="rec-name" type="text" placeholder="Nombre (ej. Alquiler)" maxlength="60" required>
+        <div class="chips" id="rec-cat-chips"></div>
+        <div class="amount-row">
+          <div class="seg small" id="rec-cur-seg">
+            <button type="button" data-cur="ARS" class="on">ARS</button>
+            <button type="button" data-cur="USD">USD</button>
+          </div>
+          <input id="rec-amount" type="text" inputmode="decimal" placeholder="Monto" required>
+        </div>
+        <label class="inline">Día del mes (1–28)
+          <input id="rec-day" type="number" min="1" max="28" value="1" required>
+        </label>
+        <button class="btn primary" type="submit">Guardar recurrente</button>
+      </form>
+      <div id="rec-list" class="card list"></div>
 
-  <script>
-    window.logDebug = function(msg) {
-      const box = document.getElementById('debug-box');
-      const line = document.createElement('div');
-      line.textContent = new Date().toLocaleTimeString('es-AR') + ' — ' + msg;
-      box.appendChild(line);
-      if (msg.includes('ERROR') || msg.includes('FALLÓ')) {
-        box.classList.add('debug-visible');
-      }
-    };
-    window.addEventListener('error', (e) => window.logDebug('ERROR: ' + e.message));
-    window.addEventListener('unhandledrejection', (e) => {
-      const reason = e.reason && e.reason.message ? e.reason.message : e.reason;
-      window.logDebug('ERROR: ' + reason);
+      <h2>Categorías</h2>
+      <div class="seg small" id="catedit-seg">
+        <button type="button" data-type="gasto" class="on">Gasto</button>
+        <button type="button" data-type="ingreso">Ingreso</button>
+        <button type="button" data-type="inversion">Inversión</button>
+      </div>
+      <div id="catedit-list" class="card list"></div>
+      <form id="catedit-form" class="row2 add-inline">
+        <input id="catedit-input" type="text" placeholder="Nueva categoría" maxlength="30">
+        <button class="btn small" type="submit">Agregar</button>
+      </form>
+
+      <h2>Formas de pago</h2>
+      <div id="payedit-list" class="card list"></div>
+      <form id="payedit-form" class="row2 add-inline">
+        <input id="payedit-input" type="text" placeholder="Nueva forma de pago" maxlength="30">
+        <button class="btn small" type="submit">Agregar</button>
+      </form>
+
+      <div class="foot">
+        <button class="btn ghost" id="logout-btn">Cerrar sesión</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar" id="tabbar">
+    <button data-tab="inicio" class="on"><span>＋</span>Cargar</button>
+    <button data-tab="historial"><span>≡</span>Historial</button>
+    <button data-tab="deudas"><span>⇄</span>Deudas</button>
+    <button data-tab="mas"><span>⋯</span>Más</button>
+  </nav>
+</div>
+
+<div id="toast" class="toast hidden" role="status"></div>
+<div id="errbox" class="errbox hidden"></div>
+
+<script>
+  // Si algo falla al cargar, mostrarlo en pantalla (sirve para sacarle foto y mandarla)
+  (function () {
+    var box = document.getElementById('errbox');
+    function show(m) { box.textContent = 'Error: ' + m; box.classList.remove('hidden'); }
+    window.addEventListener('error', function (e) { show(e.message); });
+    window.addEventListener('unhandledrejection', function (e) {
+      show((e.reason && e.reason.message) || e.reason);
     });
-    window.logDebug('Página cargada, iniciando app.js...');
-
-    // Diagnóstico oculto: tocar el logo 5 veces seguidas lo muestra/oculta
-    let tapCount = 0;
-    let tapTimer = null;
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.brand-mark, .login-mark').forEach((el) => {
-        el.addEventListener('click', () => {
-          tapCount++;
-          clearTimeout(tapTimer);
-          tapTimer = setTimeout(() => { tapCount = 0; }, 1500);
-          if (tapCount >= 5) {
-            document.getElementById('debug-box').classList.toggle('debug-visible');
-            tapCount = 0;
-          }
-        });
-      });
-    });
-  </script>
-  <script type="module" src="app.js"></script>
+  })();
+</script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
