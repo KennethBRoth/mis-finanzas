@@ -264,6 +264,21 @@ function renderChips() {
     b.addEventListener('click', () => { form.cat = c; renderChips(); });
     box.appendChild(b);
   });
+  const edit = document.createElement('button');
+  edit.type = 'button';
+  edit.className = 'link';
+  edit.textContent = 'Editar categorías';
+  edit.addEventListener('click', openCatEditor);
+  box.appendChild(edit);
+}
+
+// Atajo desde "Cargar": abre Más → Categorías con el tipo que está elegido
+function openCatEditor() {
+  catEditType = form.type;
+  [...$('catedit-seg').children].forEach((x) => x.classList.toggle('on', x.dataset.type === catEditType));
+  renderCatEditor();
+  document.querySelector('#tabbar [data-tab="mas"]').click();
+  $('catedit-seg').scrollIntoView();
 }
 
 function renderPay() {
