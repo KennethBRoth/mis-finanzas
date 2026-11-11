@@ -170,7 +170,7 @@ input:focus, select:focus { outline: 2px solid var(--ink); outline-offset: 0; }
 /* ---------- Tab bar ---------- */
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(5, 1fr);
   background: var(--card); border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -191,3 +191,19 @@ input:focus, select:focus { outline: 2px solid var(--ink); outline-offset: 0; }
 .bal.compact .parts { display: none; }
 #tab-inicio .summary { gap: 6px; margin-bottom: 12px; }
 .bal.compact .amt, .bal.compact .lbl { white-space: nowrap; }
+
+/* Inversiones */
+.inv-pos { background: var(--card); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+.inv-head { display: flex; justify-content: space-between; gap: 10px; }
+.inv-peso { font-family: var(--font-mono); font-weight: 600; }
+.inv-price { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
+.inv-price input { width: 42%; min-width: 0; padding: 8px 10px; border: 1px solid var(--line, #cfcabd); border-radius: 8px; background: var(--paper); font: inherit; font-family: var(--font-mono); }
+.inv-res { flex: 1; display: flex; flex-direction: column; align-items: flex-end; font-family: var(--font-mono); font-size: 14px; }
+.inv-bar { display: grid; grid-template-columns: 56px 1fr 40px; gap: 8px; align-items: center; margin: 6px 0; font-size: 13px; }
+.inv-bar-v { text-align: right; font-family: var(--font-mono); }
+.inv-analisis p { margin: 0 0 8px; }
+.inv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.inv-chip { font-family: var(--font-mono); font-size: 12px; padding: 3px 8px; border-radius: 999px; background: var(--paper); }
+.inv-chip.ingreso { color: var(--ingreso); } .inv-chip.gasto { color: var(--gasto); }
+#tab-inversiones .card > div + div { margin-top: 14px; }
+.tabbar button { font-size: 11px; }
