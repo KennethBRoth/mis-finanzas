@@ -109,6 +109,11 @@
     </section>
 
     <!-- MÁS -->
+    <section id="tab-inversiones" class="tab hidden">
+      <h1>Inversiones</h1>
+      <div id="inv-root"></div>
+    </section>
+
     <section id="tab-mas" class="tab hidden">
       <h2>Presupuestos</h2>
       <p class="muted">Límite mensual en pesos por categoría de gasto. Vacío = sin límite.</p>
@@ -165,6 +170,7 @@
     <button data-tab="inicio" class="on"><span>＋</span>Cargar</button>
     <button data-tab="historial"><span>≡</span>Historial</button>
     <button data-tab="deudas"><span>⇄</span>Deudas</button>
+    <button data-tab="inversiones"><span>↗</span>Inversión</button>
     <button data-tab="mas"><span>⋯</span>Más</button>
   </nav>
 </div>
@@ -184,5 +190,6 @@
   })();
 </script>
 <script type="module" src="app.js"></script>
+<script type="module" src="inversiones.js"></script>
 </body>
 </html>
